@@ -1,15 +1,10 @@
 package org.example;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -17,63 +12,71 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main {
+    private static final String CRAN_DOC_DIRECTORY = "cran.all.1400";
+    private static final String CRAN_QRY_DIRECTORY = "cran.qry";
+    private static final String INDEX_DIRECTORY = "./index";
+    private static final String RESULT_DIRECTORY = "search_results.txt";
 
     public static void main(String[] args) throws IOException, ParseException {
-        createIndex();
-        TestIndex(1);
+        Analyzer analyzer = createAnalyzer();
+        createIndex(analyzer);
+        searchQueries(analyzer, new BM25Similarity());
     }
 
-    public static void createIndex() throws IOException {
-        try {
-            String corpus = new String(Files.readAllBytes(Paths.get("cran.all.1400")));
-            ArrayList<Document> processedDocuments = getDocuments(corpus);
+    private static Analyzer createAnalyzer() throws IOException {
+        return CustomAnalyzer.builder()
+                .withTokenizer("classic")
+                .addTokenFilter("trim")
+                .addTokenFilter("lowercase")
+                .addTokenFilter("stop")
+                .addTokenFilter("porterstem")
+                .build();
+    }
 
-            Analyzer analyzer = CustomAnalyzer.builder()
-                    .withTokenizer("classic")
-                    .addTokenFilter("trim")
-                    .addTokenFilter("lowercase")
-                    .addTokenFilter("stop")
-                    .addTokenFilter("porterstem")
-                    .build();
+    private static void createIndex(Analyzer analyzer) throws IOException {
+        Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 
-            Directory directory = FSDirectory.open(Paths.get("./index"));
-            IndexWriterConfig config = new IndexWriterConfig(analyzer);
-            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-
-            try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
-                indexWriter.addDocuments(processedDocuments);
-            }
-        } catch (IOException e) {
-            System.err.println("Error creating index: " + e.getMessage());
-            throw e;
+        try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
+            String corpus = new String(Files.readAllBytes(Paths.get(CRAN_DOC_DIRECTORY)));
+            ArrayList<Document> documents = getDocuments(corpus);
+            indexWriter.addDocuments(documents);
         }
     }
 
     private static ArrayList<Document> getDocuments(String corpus) {
         ArrayList<Document> processedDocuments = new ArrayList<>();
-
         String[] documents = corpus.split("(?=\\.I \\d+)");
+
         for (String document : documents) {
             try {
                 String[] fields = document.split("\\.[ITABW]");
-                if (fields.length < 6) {
-                    continue; // Skip if not enough fields are found
-                }
+                if (fields.length < 6) continue;
 
                 String id = fields[1].trim();
                 String title = fields[2].trim();
+                String author = fields[3].trim();
+                String bibliography = fields[4].trim();
                 String content = fields[5].trim();
 
                 Document luceneDocument = new Document();
                 luceneDocument.add(new StringField("id", id, Field.Store.YES));
-                luceneDocument.add(new TextField("title", title, Field.Store.NO));
-                luceneDocument.add(new TextField("content", content, Field.Store.NO));
+                luceneDocument.add(new TextField("title", title, Field.Store.YES));
+                luceneDocument.add(new TextField("author", author, Field.Store.YES));
+                luceneDocument.add(new TextField("bibliography", bibliography, Field.Store.YES));
+                luceneDocument.add(new TextField("content", content, Field.Store.YES));
+
                 processedDocuments.add(luceneDocument);
             } catch (Exception e) {
                 System.err.println("Error processing document: " + e.getMessage());
@@ -82,27 +85,19 @@ public class Main {
         return processedDocuments;
     }
 
-    public static void TestIndex(Integer similarity) throws IOException, ParseException {
-        String queryDoc = new String(Files.readAllBytes(Paths.get("cran.qry")));
-        String[] queries = queryDoc.split("(?=\\.I \\d+)");
-
-        try (Directory directory = FSDirectory.open(Paths.get("./index"));
+    private static void searchQueries(Analyzer analyzer, Similarity similarity) throws IOException, ParseException {
+        try (Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
              DirectoryReader reader = DirectoryReader.open(directory);
-             BufferedWriter writer = new BufferedWriter(new FileWriter("search_results.txt", false))) {
+             PrintWriter writer = new PrintWriter(new FileWriter(RESULT_DIRECTORY))) {
 
             IndexSearcher searcher = new IndexSearcher(reader);
-            searcher.setSimilarity(similarity == 0 ? new ClassicSimilarity() : new BM25Similarity());
+            searcher.setSimilarity(similarity);
 
-            Analyzer analyzer = CustomAnalyzer.builder()
-                    .withTokenizer("classic")
-                    .addTokenFilter("trim")
-                    .addTokenFilter("lowercase")
-                    .addTokenFilter("stop")
-                    .addTokenFilter("porterstem")
-                    .build();
-
-            String[] fields = {"title", "content"};
+            String[] fields = {"title", "author", "bibliography", "content"};
             MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
+
+            String queryDoc = new String(Files.readAllBytes(Paths.get(CRAN_QRY_DIRECTORY)));
+            String[] queries = queryDoc.split("(?=\\.I \\d+)");
 
             for (String q : queries) {
                 try {
@@ -110,7 +105,7 @@ public class Main {
                     if (queryParts.length < 3) continue;
 
                     int queryId = Integer.parseInt(queryParts[1].trim());
-                    String queryString = queryParts[2].replaceAll("\\?", "").trim();
+                    String queryString = queryParts[2].trim();
 
                     Query parsedQuery = parser.parse(queryString);
                     TopDocs results = searcher.search(parsedQuery, 1400);
@@ -123,17 +118,14 @@ public class Main {
         }
     }
 
-    private static void writeResults(BufferedWriter writer, int queryId, TopDocs results,
-                                     IndexSearcher searcher, int similarity) throws IOException {
-        StoredFields storedFields = searcher.storedFields();
-        for (int i = 0; i < results.scoreDocs.length; i++) {
-            ScoreDoc scoreDoc = results.scoreDocs[i];
-            Document doc = storedFields.document(scoreDoc.doc);
-            String line = String.format("%d constant %s %d %.6f %s",
-                    queryId, doc.get("id").trim(), i + 1, scoreDoc.score,
-                    similarity == 0 ? "STANDARD" : "BM25");
-            writer.write(line);
-            writer.newLine();
+    private static void writeResults(PrintWriter writer, int queryId, TopDocs results,
+                                     IndexSearcher searcher, Similarity similarity) throws IOException {
+        ScoreDoc[] hits = results.scoreDocs;
+        for (int i = 0; i < hits.length; i++) {
+            Document doc = searcher.doc(hits[i].doc);
+            writer.printf("%d Q0 %s %d %.6f %s%n",
+                    queryId, doc.get("id"), i + 1, hits[i].score,
+                    similarity instanceof ClassicSimilarity ? "STANDARD" : "BM25");
         }
     }
 }
