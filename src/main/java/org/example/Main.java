@@ -40,7 +40,7 @@ public class Main
         ArrayList<Document> processedDocuments = getDocuments(corpus);
 
         Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("standard")
+                .withTokenizer("classic")
                 .addTokenFilter("trim")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
@@ -90,7 +90,7 @@ public class Main
         }
 
         Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("standard")
+                .withTokenizer("classic")
                 .addTokenFilter("trim")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
@@ -114,9 +114,9 @@ public class Main
                     Document doc = storedFields.document(scoreDoc.doc);
                     String line;
                     if (similarity == 0) {
-                        line = query[1].trim() + " constant " + doc.get("id").trim() + " " + index + " " + scoreDoc.score + " STANDARD";
+                        line = Integer.parseInt(query[1].trim()) + " constant " + doc.get("id").trim() + " " + index + " " + scoreDoc.score + " STANDARD";
                     } else {
-                        line = query[1].trim() + " constant " + doc.get("id").trim() + " " + index + " " + scoreDoc.score + " BM25";
+                        line = Integer.parseInt(query[1].trim()) + " constant " + doc.get("id").trim() + " " + index + " " + scoreDoc.score + " BM25";
                     }
                     writer.write(line);
                     writer.newLine();
