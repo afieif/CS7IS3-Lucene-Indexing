@@ -35,11 +35,9 @@ public class Main {
 
     private static Analyzer createAnalyzer() throws IOException {
         return CustomAnalyzer.builder()
-                .withTokenizer("classic")
-                .addTokenFilter("trim")
+                .withTokenizer("standard")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
-                .addTokenFilter("porterstem")
                 .build();
     }
 
@@ -105,7 +103,7 @@ public class Main {
                     if (queryParts.length < 3) continue;
 
                     int queryId = Integer.parseInt(queryParts[1].trim());
-                    String queryString = queryParts[2].trim();
+                    String queryString = queryParts[2].trim().replace("?","");
 
                     Query parsedQuery = parser.parse(queryString);
                     TopDocs results = searcher.search(parsedQuery, 1400);
