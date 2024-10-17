@@ -105,13 +105,13 @@ public class Main
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 
         // Open the writer once outside the loop
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("search_results.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("search_results.txt", false))) {
             for (String q : queries) {
                 String[] query = q.split("\\.[IW]");
 //                System.out.println(query[1].trim()+" "+query[2].trim());
 
                 Query queryString = parser.parse(query[2].replaceAll("([+\\-!(){}\\[\\]^\"~*?:\\\\])", "\\\\$1").trim());
-                TopDocs results = searcher.search(queryString, 1);
+                TopDocs results = searcher.search(queryString, 20);
                 StoredFields storedFields = searcher.storedFields();
 
                 int index = 0;
