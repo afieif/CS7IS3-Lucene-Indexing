@@ -97,8 +97,10 @@ public class Main {
             String queryDoc = new String(Files.readAllBytes(Paths.get(CRAN_QRY_DIRECTORY)));
             String[] queries = queryDoc.split("(?=\\.I \\d+)");
 
+            int idx = 0;
             for (String q : queries) {
                 try {
+                    idx++;
                     String[] queryParts = q.split("\\.[IW]");
                     if (queryParts.length < 3) continue;
 
@@ -108,7 +110,7 @@ public class Main {
                     Query parsedQuery = parser.parse(queryString);
                     TopDocs results = searcher.search(parsedQuery, 100);
 
-                    writeResults(writer, queryId, results, searcher, similarity);
+                    writeResults(writer, idx, results, searcher, similarity);
                 } catch (ParseException | NumberFormatException e) {
                     System.err.println("Error processing query: " + e.getMessage());
                 }
