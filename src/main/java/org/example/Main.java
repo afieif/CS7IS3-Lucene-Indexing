@@ -32,7 +32,7 @@ public class Main
 
     public static void main(String[] args) throws IOException, ParseException {
         createIndex();
-        TestIndex(1);
+        TestIndex(0);
     }
     
     public static void createIndex() throws IOException {
