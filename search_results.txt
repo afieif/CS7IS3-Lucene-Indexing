@@ -1,0 +1,30 @@
+ 001
+ constant  51
+ 1 15.065029 BM25
+ 001
+ constant  486
+ 2 14.608824 BM25
+ 001
+ constant  184
+ 3 13.721516 BM25
+ 001
+ constant  13
+ 4 11.367207 BM25
+ 001
+ constant  746
+ 5 11.325957 BM25
+ 001
+ constant  12
+ 6 11.109994 BM25
+ 001
+ constant  792
+ 7 10.451564 BM25
+ 001
+ constant  875
+ 8 9.890983 BM25
+ 001
+ constant  878
+ 9 9.552639 BM25
+ 001
+ constant  359
+ 10 9.239395 BM25
