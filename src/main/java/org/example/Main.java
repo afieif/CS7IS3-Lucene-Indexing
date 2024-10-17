@@ -111,7 +111,7 @@ public class Main
 //                System.out.println(query[1].trim()+" "+query[2].trim());
 
                 Query queryString = parser.parse(query[2].replaceAll("([+\\-!(){}\\[\\]^\"~*?:\\\\])", "\\\\$1").trim());
-                TopDocs results = searcher.search(queryString, 10);
+                TopDocs results = searcher.search(queryString, 1);
                 StoredFields storedFields = searcher.storedFields();
 
                 int index = 0;
