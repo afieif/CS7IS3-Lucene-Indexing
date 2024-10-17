@@ -70,8 +70,8 @@ public class Main
 //            System.out.println(fields[2]); Title
 //            System.out.println(fields[5]); Content
             StringField id = new StringField("id",fields[1],Field.Store.YES);
-            TextField title = new TextField("title", fields[2], Field.Store.YES);
-            TextField content = new TextField("content", fields[5], Field.Store.YES);
+            TextField title = new TextField("title", fields[2], Field.Store.NO);
+            TextField content = new TextField("content", fields[5], Field.Store.NO);
             Document luceneDocument = new Document();
             luceneDocument.add(title);
             luceneDocument.add(content);
