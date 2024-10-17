@@ -42,15 +42,13 @@ public class Main
         String corpus = new String(Files.readAllBytes(Paths.get("cran.all.1400")));
         ArrayList<Document> processedDocuments = getDocuments(corpus);
 
-//        Analyzer analyzer = CustomAnalyzer.builder()
-//                .withTokenizer("standard")
-//                .addTokenFilter("trim")
-//                .addTokenFilter("lowercase")
-//                .addTokenFilter("stop")
-//                .addTokenFilter("porterstem")
-//                .build();
-
-        Analyzer analyzer = new StandardAnalyzer();
+        Analyzer analyzer = CustomAnalyzer.builder()
+                .withTokenizer("standard")
+                .addTokenFilter("trim")
+                .addTokenFilter("lowercase")
+                .addTokenFilter("stop")
+                .addTokenFilter("porterstem")
+                .build();
 
         Directory directory = FSDirectory.open(Paths.get("./index"));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -96,15 +94,13 @@ public class Main
             searcher.setSimilarity(new BM25Similarity());
         }
 
-//        Analyzer analyzer = CustomAnalyzer.builder()
-//                .withTokenizer("standard")
-//                .addTokenFilter("trim")
-//                .addTokenFilter("lowercase")
-//                .addTokenFilter("stop")
-//                .addTokenFilter("porterstem")
-//                .build();
-
-        Analyzer analyzer = new StandardAnalyzer();
+        Analyzer analyzer = CustomAnalyzer.builder()
+                .withTokenizer("standard")
+                .addTokenFilter("trim")
+                .addTokenFilter("lowercase")
+                .addTokenFilter("stop")
+                .addTokenFilter("porterstem")
+                .build();
 
         String[] fields = {"title", "content"};
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
