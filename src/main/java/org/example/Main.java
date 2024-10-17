@@ -42,7 +42,7 @@ public class Main
         ArrayList<Document> processedDocuments = getDocuments(corpus);
 
         Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("wikipedia")
+                .withTokenizer("standard")
                 .addTokenFilter("trim")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
