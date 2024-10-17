@@ -9,12 +9,12 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 public class CranfieldSearcher {
     public static void main(String[] args) throws Exception {
@@ -24,6 +24,7 @@ public class CranfieldSearcher {
         StandardAnalyzer analyzer = new StandardAnalyzer();
 
         QueryParser parser = new QueryParser("content", analyzer);
+        parser.setAllowLeadingWildcard(true); // Allow leading wildcards
 
         try (BufferedReader br = new BufferedReader(new FileReader("cran.qry"));
              FileWriter writer = new FileWriter("results.trec")) {
@@ -52,7 +53,9 @@ public class CranfieldSearcher {
     }
 
     private static void processQuery(int queryID, String queryText, IndexSearcher searcher, QueryParser parser, FileWriter writer) throws Exception {
-        Query query = parser.parse(queryText);
+        // Escape special characters in the query
+        String escapedQuery = QueryParser.escape(queryText);
+        Query query = parser.parse(escapedQuery);
         TopDocs results = searcher.search(query, 100); // Retrieve top 100 results
 
         for (int i = 0; i < results.scoreDocs.length; i++) {
