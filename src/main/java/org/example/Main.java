@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
@@ -41,13 +42,15 @@ public class Main
         String corpus = new String(Files.readAllBytes(Paths.get("cran.all.1400")));
         ArrayList<Document> processedDocuments = getDocuments(corpus);
 
-        Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("standard")
-                .addTokenFilter("trim")
-                .addTokenFilter("lowercase")
-                .addTokenFilter("stop")
-                .addTokenFilter("porterstem")
-                .build();
+//        Analyzer analyzer = CustomAnalyzer.builder()
+//                .withTokenizer("standard")
+//                .addTokenFilter("trim")
+//                .addTokenFilter("lowercase")
+//                .addTokenFilter("stop")
+//                .addTokenFilter("porterstem")
+//                .build();
+
+        Analyzer analyzer = new StandardAnalyzer();
 
         Directory directory = FSDirectory.open(Paths.get("./index"));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -93,13 +96,15 @@ public class Main
             searcher.setSimilarity(new BM25Similarity());
         }
 
-        Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("standard")
-                .addTokenFilter("trim")
-                .addTokenFilter("lowercase")
-                .addTokenFilter("stop")
-                .addTokenFilter("porterstem")
-                .build();
+//        Analyzer analyzer = CustomAnalyzer.builder()
+//                .withTokenizer("standard")
+//                .addTokenFilter("trim")
+//                .addTokenFilter("lowercase")
+//                .addTokenFilter("stop")
+//                .addTokenFilter("porterstem")
+//                .build();
+
+        Analyzer analyzer = new StandardAnalyzer();
 
         String[] fields = {"title", "content"};
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
