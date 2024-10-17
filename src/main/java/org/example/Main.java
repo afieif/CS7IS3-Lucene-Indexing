@@ -57,22 +57,27 @@ public class Main
     }
 
     private static ArrayList<Document> getDocuments(String corpus) {
-        ArrayList<Document> processedDocuments = new ArrayList<Document>();
+        ArrayList<Document> processedDocuments = new ArrayList<>();
 
         String[] documents = corpus.split("(?=\\.I \\d+)");
-        for(String document: documents){
+        for (String document : documents) {
             String[] fields = document.split("\\.[ITABW]");
-            StringField id = new StringField("id",fields[1],Field.Store.YES);
-            TextField title = new TextField("title", fields[2], Field.Store.NO);
-            TextField content = new TextField("content", fields[5], Field.Store.NO);
-            Document luceneDocument = new Document();
-            luceneDocument.add(title);
-            luceneDocument.add(content);
-            luceneDocument.add(id);
-            processedDocuments.add(luceneDocument);
+            if (fields.length > 5) { // Ensure all fields are available
+                StringField id = new StringField("id", fields[1].trim(), Field.Store.YES);
+                TextField title = new TextField("title", fields[2].trim(), Field.Store.NO);
+                TextField content = new TextField("content", fields[5].trim(), Field.Store.NO);
+
+                Document luceneDocument = new Document();
+                luceneDocument.add(id);
+                luceneDocument.add(title);
+                luceneDocument.add(content);
+
+                processedDocuments.add(luceneDocument);
+            }
         }
         return processedDocuments;
     }
+
 
     public static void TestIndex(Integer similarity) throws IOException, ParseException {
 
