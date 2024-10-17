@@ -1,5 +1,4 @@
 package org.example;
-import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,10 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
@@ -65,8 +62,6 @@ public class Main
         String[] documents = corpus.split("(?=\\.I \\d+)");
         for(String document: documents){
             String[] fields = document.split("\\.[ITABW]");
-//            System.out.println(fields[2]); Title
-//            System.out.println(fields[5]); Content
             StringField id = new StringField("id",fields[1],Field.Store.YES);
             TextField title = new TextField("title", fields[2], Field.Store.NO);
             TextField content = new TextField("content", fields[5], Field.Store.NO);
@@ -109,9 +104,7 @@ public class Main
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("search_results.txt", false))) {
             for (String q : queries) {
                 String[] query = q.split("\\.[IW]");
-//                System.out.println(query[1].trim()+" "+query[2].trim());
-
-                Query queryString = parser.parse(query[2].replaceAll("([+\\-!(){}\\[\\]^\"~*?:\\\\])", "\\\\$1").trim());
+                Query queryString = parser.parse(query[2].replaceAll("\\?", "").trim());
                 TopDocs results = searcher.search(queryString, 50);
                 StoredFields storedFields = searcher.storedFields();
 
