@@ -9,6 +9,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.store.Directory;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ public class CranfieldSearcher {
         Directory indexDirectory = CranfieldIndexer.main(null); // Get the indexed directory
         IndexReader reader = DirectoryReader.open(indexDirectory);
         IndexSearcher searcher = new IndexSearcher(reader);
+        searcher.setSimilarity(new BM25Similarity());
         StandardAnalyzer analyzer = new StandardAnalyzer();
 
         QueryParser parser = new QueryParser("content", analyzer);
