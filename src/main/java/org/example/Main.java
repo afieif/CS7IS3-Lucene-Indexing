@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -77,17 +78,20 @@ public class Main
         return processedDocuments;
     }
 
-    public  static void TestIndex(Integer similarity) throws IOException, ParseException {
+    public static void TestIndex(Integer similarity) throws IOException, ParseException {
 
         String queryDoc = new String(Files.readAllBytes(Paths.get("cran.qry")));
-        String[] queries = queryDoc.split("(?=\\.I\\d+)");
+        String[] queries = queryDoc.split("(?=\\.I \\d+)");
 
         Directory directory = FSDirectory.open(Paths.get("./index"));
         DirectoryReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
-        if(similarity == 0) {searcher.setSimilarity(new ClassicSimilarity());}
-        else {searcher.setSimilarity(new BM25Similarity());}
+        if(similarity == 0) {
+            searcher.setSimilarity(new ClassicSimilarity());
+        } else {
+            searcher.setSimilarity(new BM25Similarity());
+        }
 
         Analyzer analyzer = CustomAnalyzer.builder()
                 .withTokenizer("wikipedia")
@@ -100,24 +104,25 @@ public class Main
         String[] fields = {"title", "content"};
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 
-        for(String q:queries){
-            String[] query = q.split("\\.[IW]");
-            Query queryString = parser.parse(query[2]);
+        // Open the writer once outside the loop
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("search_results.txt", true))) {
+            for (String q : queries) {
+                String[] query = q.split("\\.[IW]");
+//                System.out.println(query[1].trim()+" "+query[2].trim());
 
-            TopDocs results = searcher.search(queryString,10);
-            StoredFields storedFields = searcher.storedFields();
+                Query queryString = parser.parse(query[2].replaceAll("([+\\-!(){}\\[\\]^\"~*?:\\\\])", "\\\\$1").trim());
+                TopDocs results = searcher.search(queryString, 10);
+                StoredFields storedFields = searcher.storedFields();
 
-            try(BufferedWriter writer = new BufferedWriter(new FileWriter("search_results.txt",true))){
                 int index = 0;
-                for(ScoreDoc scoreDoc: results.scoreDocs) {
+                for (ScoreDoc scoreDoc : results.scoreDocs) {
                     index++;
                     Document doc = storedFields.document(scoreDoc.doc);
                     String line;
-                    if(similarity == 0) {
-                        line = String.format("%s constant %s %d %.6f VECTORSPACE", query[1], doc.get("id"), index, scoreDoc.score);
-                    }
-                    else {
-                        line = String.format("%s constant %s %d %.6f BM25", query[1], doc.get("id"), index, scoreDoc.score);
+                    if (similarity == 0) {
+                        line = query[1].trim() + " constant " + doc.get("id").trim() + " " + index + " " + scoreDoc.score + " STANDARD";
+                    } else {
+                        line = query[1].trim() + " constant " + doc.get("id").trim() + " " + index + " " + scoreDoc.score + " BM25";
                     }
                     writer.write(line);
                     writer.newLine();
@@ -127,5 +132,6 @@ public class Main
 
         reader.close();
         directory.close();
+
     }
 }
