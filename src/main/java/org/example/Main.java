@@ -94,7 +94,7 @@ public class Main
         }
 
         Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("wikipedia")
+                .withTokenizer("standard")
                 .addTokenFilter("trim")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
