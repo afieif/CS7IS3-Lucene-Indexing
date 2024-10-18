@@ -1,6 +1,8 @@
 package org.example;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenFilterFactory;
+import org.apache.lucene.analysis.TokenizerFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
@@ -30,12 +32,13 @@ public class Main {
     public static void main(String[] args) throws IOException, ParseException {
         Analyzer analyzer = createAnalyzer();
         createIndex(analyzer);
-        searchQueries(analyzer, new BM25Similarity());
+        searchQueries(analyzer, new ClassicSimilarity());
     }
 
     private static Analyzer createAnalyzer() throws IOException {
+        System.out.println(TokenizerFactory.availableTokenizers());
         return CustomAnalyzer.builder()
-                .withTokenizer("wikipedia")
+                .withTokenizer("whitespace")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
                 .addTokenFilter("porterstem")
@@ -123,7 +126,8 @@ public class Main {
                                      IndexSearcher searcher, Similarity similarity) throws IOException {
         ScoreDoc[] hits = results.scoreDocs;
         for (int i = 0; i < hits.length; i++) {
-            Document doc = searcher.doc(hits[i].doc);
+            int docId = hits[i].doc;
+            Document doc = searcher.storedFields().document(docId);
             writer.printf("%d Q0 %s %d %.6f %s%n",
                     queryId, doc.get("id"), i + 1, hits[i].score,
                     similarity instanceof ClassicSimilarity ? "STANDARD" : "BM25");
