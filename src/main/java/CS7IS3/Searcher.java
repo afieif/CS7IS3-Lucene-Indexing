@@ -30,8 +30,8 @@ public class Searcher {
         DirectoryReader reader = DirectoryReader.open(directory);
 
         IndexSearcher indexSearcher = new IndexSearcher(reader);
-//        indexSearcher.setSimilarity(new BM25Similarity());
-        indexSearcher.setSimilarity(new ClassicSimilarity());
+        indexSearcher.setSimilarity(new BM25Similarity());
+//        indexSearcher.setSimilarity(new ClassicSimilarity());
 
         String[] fields = {"title", "content"};
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
