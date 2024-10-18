@@ -38,13 +38,12 @@ public class Main {
     }
 
     private static Analyzer createAnalyzer() throws IOException {
-        return new EnglishAnalyzer();
-//        return CustomAnalyzer.builder()
-//                .withTokenizer("standard")
-//                .addTokenFilter("lowercase")
-//                .addTokenFilter("stop")
-//                .addTokenFilter("porterstem")
-//                .build();
+        return CustomAnalyzer.builder()
+                .withTokenizer("standard")
+                .addTokenFilter("lowercase")
+                .addTokenFilter("stop")
+                .addTokenFilter("porterstem")
+                .build();
     }
 
     private static void createIndex(Analyzer analyzer) throws IOException {
