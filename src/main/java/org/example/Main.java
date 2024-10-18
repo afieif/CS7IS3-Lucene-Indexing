@@ -38,6 +38,7 @@ public class Main {
                 .withTokenizer("standard")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
+                .addTokenFilter("porterstem")
                 .build();
     }
 
