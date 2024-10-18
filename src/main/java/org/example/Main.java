@@ -70,15 +70,15 @@ public class Main {
 
                 String id = fields[1].trim();
                 String title = fields[2].trim();
-                String author = fields[3].trim();
-                String bibliography = fields[4].trim();
+//                String author = fields[3].trim();
+//                String bibliography = fields[4].trim();
                 String content = fields[5].trim();
 
                 Document luceneDocument = new Document();
                 luceneDocument.add(new StringField("id", id, Field.Store.YES));
                 luceneDocument.add(new TextField("title", title, Field.Store.YES));
-                luceneDocument.add(new TextField("author", author, Field.Store.YES));
-                luceneDocument.add(new TextField("bibliography", bibliography, Field.Store.YES));
+//                luceneDocument.add(new TextField("author", author, Field.Store.YES));
+//                luceneDocument.add(new TextField("bibliography", bibliography, Field.Store.YES));
                 luceneDocument.add(new TextField("content", content, Field.Store.YES));
 
                 processedDocuments.add(luceneDocument);
@@ -97,7 +97,8 @@ public class Main {
             IndexSearcher searcher = new IndexSearcher(reader);
             searcher.setSimilarity(similarity);
 
-            String[] fields = {"title", "author", "bibliography", "content"};
+//            String[] fields = {"title", "author", "bibliography", "content"};
+            String[] fields = {"title","content"};
             MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 
             String queryDoc = new String(Files.readAllBytes(Paths.get(CRAN_QRY_DIRECTORY)));
