@@ -109,7 +109,7 @@ public class Main {
                     String queryString = queryParts[2].trim().replace("?","");
 
                     Query parsedQuery = parser.parse(queryString);
-                    TopDocs results = searcher.search(parsedQuery, 50);
+                    TopDocs results = searcher.search(parsedQuery, 150);
 
                     writeResults(writer, idx, results, searcher, similarity);
                 } catch (ParseException | NumberFormatException e) {
