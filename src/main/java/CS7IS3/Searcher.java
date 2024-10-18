@@ -10,6 +10,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -29,7 +30,8 @@ public class Searcher {
         DirectoryReader reader = DirectoryReader.open(directory);
 
         IndexSearcher indexSearcher = new IndexSearcher(reader);
-        indexSearcher.setSimilarity(new BM25Similarity());
+//        indexSearcher.setSimilarity(new BM25Similarity());
+        indexSearcher.setSimilarity(new ClassicSimilarity());
 
         String[] fields = {"title", "content"};
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
