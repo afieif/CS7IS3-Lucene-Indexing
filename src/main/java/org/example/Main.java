@@ -32,7 +32,7 @@ public class Main {
     public static void main(String[] args) throws IOException, ParseException {
         Analyzer analyzer = createAnalyzer();
         createIndex(analyzer);
-        searchQueries(analyzer, new ClassicSimilarity());
+        searchQueries(analyzer, new BM25Similarity());
     }
 
     private static Analyzer createAnalyzer() throws IOException {
