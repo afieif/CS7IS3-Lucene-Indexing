@@ -75,10 +75,10 @@ public class Main {
 
                 Document luceneDocument = new Document();
                 luceneDocument.add(new StringField("id", id, Field.Store.YES));
-                luceneDocument.add(new TextField("title", title, Field.Store.YES));
+                luceneDocument.add(new TextField("title", title, Field.Store.NO));
 //                luceneDocument.add(new TextField("author", author, Field.Store.YES));
 //                luceneDocument.add(new TextField("bibliography", bibliography, Field.Store.YES));
-                luceneDocument.add(new TextField("content", content, Field.Store.YES));
+                luceneDocument.add(new TextField("content", content, Field.Store.NO));
 
                 processedDocuments.add(luceneDocument);
             } catch (Exception e) {
