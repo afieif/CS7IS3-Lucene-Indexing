@@ -35,7 +35,7 @@ public class Main {
 
     private static Analyzer createAnalyzer() throws IOException {
         return CustomAnalyzer.builder()
-                .withTokenizer("standard")
+                .withTokenizer("wikipedia")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
                 .addTokenFilter("porterstem")
