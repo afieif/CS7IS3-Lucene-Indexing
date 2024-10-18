@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilterFactory;
 import org.apache.lucene.analysis.TokenizerFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
@@ -37,7 +38,7 @@ public class Main {
     }
 
     private static Analyzer createAnalyzer() throws IOException {
-        return new StandardAnalyzer();
+        return new EnglishAnalyzer();
 //        return CustomAnalyzer.builder()
 //                .withTokenizer("standard")
 //                .addTokenFilter("lowercase")
