@@ -137,7 +137,7 @@
 //    }
 //}
 
-package CS7IS3;
+package CS7IS3; 
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
