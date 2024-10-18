@@ -38,7 +38,7 @@ public class Main {
     private static Analyzer createAnalyzer() throws IOException {
         System.out.println(TokenizerFactory.availableTokenizers());
         return CustomAnalyzer.builder()
-                .withTokenizer("whitespace")
+                .withTokenizer("classic")
                 .addTokenFilter("lowercase")
                 .addTokenFilter("stop")
                 .addTokenFilter("porterstem")
