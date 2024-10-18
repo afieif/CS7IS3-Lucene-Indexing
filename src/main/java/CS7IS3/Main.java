@@ -148,13 +148,12 @@ import java.io.IOException;
 
 class Main{
     public static void main(String[] args) throws IOException, ParseException{
-//        Analyzer analyzer = CustomAnalyzer.builder()
-//                .withTokenizer("standard")
-//                .addTokenFilter("lowercase")
-//                .addTokenFilter("stop")
-//                .addTokenFilter("porterstem")
-//                .build();
-        Analyzer analyzer = new StandardAnalyzer();
+        Analyzer analyzer = CustomAnalyzer.builder()
+                .withTokenizer("standard")
+                .addTokenFilter("lowercase")
+                .addTokenFilter("stop")
+                .addTokenFilter("porterstem")
+                .build();
         Indexer.createIndex(analyzer);
         Searcher.searchQueries(analyzer);
     }
