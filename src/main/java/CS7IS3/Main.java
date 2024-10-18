@@ -141,18 +141,20 @@ package CS7IS3;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 import java.io.IOException;
 
 class Main{
     public static void main(String[] args) throws IOException, ParseException{
-        Analyzer analyzer = CustomAnalyzer.builder()
-                .withTokenizer("standard")
-                .addTokenFilter("lowercase")
-                .addTokenFilter("stop")
-                .addTokenFilter("porterstem")
-                .build();
+//        Analyzer analyzer = CustomAnalyzer.builder()
+//                .withTokenizer("standard")
+//                .addTokenFilter("lowercase")
+//                .addTokenFilter("stop")
+//                .addTokenFilter("porterstem")
+//                .build();
+        Analyzer analyzer = new StandardAnalyzer();
         Indexer.createIndex(analyzer);
         Searcher.searchQueries(analyzer);
     }
