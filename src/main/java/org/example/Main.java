@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilterFactory;
 import org.apache.lucene.analysis.TokenizerFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -36,13 +37,13 @@ public class Main {
     }
 
     private static Analyzer createAnalyzer() throws IOException {
-        System.out.println(TokenizerFactory.availableTokenizers());
-        return CustomAnalyzer.builder()
-                .withTokenizer("standard")
-                .addTokenFilter("lowercase")
-                .addTokenFilter("stop")
-                .addTokenFilter("porterstem")
-                .build();
+        return new StandardAnalyzer();
+//        return CustomAnalyzer.builder()
+//                .withTokenizer("standard")
+//                .addTokenFilter("lowercase")
+//                .addTokenFilter("stop")
+//                .addTokenFilter("porterstem")
+//                .build();
     }
 
     private static void createIndex(Analyzer analyzer) throws IOException {
