@@ -1,4 +1,4 @@
-package CS7IS3;
+package CA1;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
